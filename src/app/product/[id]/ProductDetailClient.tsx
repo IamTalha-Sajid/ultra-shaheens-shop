@@ -12,23 +12,40 @@ type Props = {
   product: Product
 }
 
+const IWEAR_SIZE_CHART = '/iWear_Size%20Chart.png'
+const COCO_SIZE_CHART = '/Coco_Size%20Chart.png'
+
 export default function ProductDetailClient({ product }: Props) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
+  const [comboClassicSize, setComboClassicSize] = useState<string | null>(null)
+  const [comboNewSize, setComboNewSize] = useState<string | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [activeImage, setActiveImage] = useState(0)
   const [addedToCart, setAddedToCart] = useState(false)
   const [sizeChartOpen, setSizeChartOpen] = useState(false)
+  const [activeSizeChart, setActiveSizeChart] = useState(
+    product.id === 'new-shirt' ? COCO_SIZE_CHART : IWEAR_SIZE_CHART
+  )
 
-  const sizeChartImage = product.id === 'new-shirt'
-    ? '/size-chart-coco.jpeg'
-    : '/size-chart-iwear.jpeg'
   const { addToCart } = useCart()
 
   const images = product.images ?? [product.image]
 
+  const openSizeChart = (chartImage: string) => {
+    setActiveSizeChart(chartImage)
+    setSizeChartOpen(true)
+  }
+
+  const canAddToCart = product.isCombo
+    ? Boolean(comboClassicSize && comboNewSize)
+    : Boolean(selectedSize)
+
   const handleAddToCart = () => {
-    if (!selectedSize) return
-    addToCart(product.id, selectedSize, quantity)
+    if (!canAddToCart) return
+    const size = product.isCombo
+      ? `Classic (iWEAR): ${comboClassicSize} / New (COCO): ${comboNewSize}`
+      : selectedSize!
+    addToCart(product.id, size, quantity)
     setAddedToCart(true)
     setTimeout(() => setAddedToCart(false), 2000)
   }
@@ -149,32 +166,80 @@ export default function ProductDetailClient({ product }: Props) {
         </div>
 
         {/* Size Selector */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <p
-              className="text-white font-bold uppercase tracking-widest text-sm"
-              style={{ fontFamily: '"din-condensed", sans-serif' }}
-            >
-              Select Size
-            </p>
-            <button
-              onClick={() => setSizeChartOpen(true)}
-              className="flex items-center gap-1.5 text-xs text-canary hover:text-canary/80 font-bold uppercase tracking-wider transition-colors border border-canary/30 hover:border-canary/60 px-3 py-1 rounded-lg bg-canary/5 hover:bg-canary/10"
-              style={{ fontFamily: '"din-condensed", sans-serif' }}
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              Size Chart
-            </button>
+        {product.isCombo ? (
+          <div className="space-y-5">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p
+                  className="text-white font-bold uppercase tracking-widest text-sm"
+                  style={{ fontFamily: '"din-condensed", sans-serif' }}
+                >
+                  Classic Shirt (iWEAR) — Size
+                </p>
+                <button
+                  onClick={() => openSizeChart(IWEAR_SIZE_CHART)}
+                  className="flex items-center gap-1.5 text-xs text-canary hover:text-canary/80 font-bold uppercase tracking-wider transition-colors border border-canary/30 hover:border-canary/60 px-3 py-1 rounded-lg bg-canary/5 hover:bg-canary/10"
+                  style={{ fontFamily: '"din-condensed", sans-serif' }}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  Size Chart
+                </button>
+              </div>
+              <SizeSelector sizes={product.sizes} selected={comboClassicSize} onSelect={setComboClassicSize} />
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p
+                  className="text-white font-bold uppercase tracking-widest text-sm"
+                  style={{ fontFamily: '"din-condensed", sans-serif' }}
+                >
+                  New Shirt (COCO) — Size
+                </p>
+                <button
+                  onClick={() => openSizeChart(COCO_SIZE_CHART)}
+                  className="flex items-center gap-1.5 text-xs text-canary hover:text-canary/80 font-bold uppercase tracking-wider transition-colors border border-canary/30 hover:border-canary/60 px-3 py-1 rounded-lg bg-canary/5 hover:bg-canary/10"
+                  style={{ fontFamily: '"din-condensed", sans-serif' }}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  Size Chart
+                </button>
+              </div>
+              <SizeSelector sizes={product.sizes} selected={comboNewSize} onSelect={setComboNewSize} />
+            </div>
           </div>
-          <SizeSelector sizes={product.sizes} selected={selectedSize} onSelect={setSelectedSize} />
-        </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p
+                className="text-white font-bold uppercase tracking-widest text-sm"
+                style={{ fontFamily: '"din-condensed", sans-serif' }}
+              >
+                Select Size
+              </p>
+              <button
+                onClick={() => openSizeChart(activeSizeChart)}
+                className="flex items-center gap-1.5 text-xs text-canary hover:text-canary/80 font-bold uppercase tracking-wider transition-colors border border-canary/30 hover:border-canary/60 px-3 py-1 rounded-lg bg-canary/5 hover:bg-canary/10"
+                style={{ fontFamily: '"din-condensed", sans-serif' }}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Size Chart
+              </button>
+            </div>
+            <SizeSelector sizes={product.sizes} selected={selectedSize} onSelect={setSelectedSize} />
+          </div>
+        )}
 
         <SizeChartModal
           open={sizeChartOpen}
           onClose={() => setSizeChartOpen(false)}
-          chartImage={sizeChartImage}
+          chartImage={activeSizeChart}
           productName={product.name}
         />
 
@@ -207,9 +272,9 @@ export default function ProductDetailClient({ product }: Props) {
         <div className="flex flex-col sm:flex-row gap-4">
           <button
             onClick={handleAddToCart}
-            disabled={!selectedSize}
+            disabled={!canAddToCart}
             className={`flex-1 py-4 px-8 rounded-xl font-bold uppercase tracking-widest transition-all duration-300 ${
-              selectedSize
+              canAddToCart
                 ? addedToCart
                   ? 'bg-green-500 text-white'
                   : 'bg-canary text-racing-green hover:bg-canary/90'
