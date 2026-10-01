@@ -40,7 +40,7 @@ export const products: Product[] = [
     description:
       'Fresh off the press. The latest Ultra Shaheens jersey, proudly sponsored by COCO, representing our continued journey with Pakistan football.',
     image: '/Merch-03.png',
-    price: 1999,
+    price: 2099,
     badge: 'New',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
     discountNote: 'Buy this shirt and get the Classic iWEAR shirt for only Rs. 1,499',
