@@ -14,13 +14,14 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({ sizes, selected, onSelect }
       {sizes.map((size) => (
         <button
           key={size}
+          type="button"
           onClick={() => onSelect(size)}
-          className={`py-2 px-3 rounded-xl border text-sm font-bold uppercase tracking-wider transition-all duration-200 ${
+          aria-pressed={selected === size}
+          className={`h-11 border font-display font-semibold text-base tracking-[0.1em] uppercase cursor-pointer transition-colors ${
             selected === size
-              ? 'bg-canary text-racing-green border-canary'
-              : 'bg-white/5 text-white border-white/20 hover:border-canary/50 hover:bg-white/10'
+              ? 'bg-canary text-ink-dark border-canary'
+              : 'bg-transparent text-paper border-paper/30 hover:border-paper'
           }`}
-          style={{ fontFamily: '"din-condensed", sans-serif' }}
         >
           {size}
         </button>

@@ -28,7 +28,7 @@ export const products: Product[] = [
     subtitle: 'The Original — by iWEAR',
     description:
       'The shirt that started it all. Our classic Ultra Shaheens jersey — crafted by iWEAR — worn by the most passionate fans in Pakistani football.',
-    image: '/Merch-01.png',
+    image: '/images/products/iwear-classic.png',
     price: 2199,
     badge: 'Classic',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
@@ -39,7 +39,7 @@ export const products: Product[] = [
     subtitle: 'New Drop — by COCO',
     description:
       'Fresh off the press. The latest Ultra Shaheens jersey, proudly sponsored by COCO, representing our continued journey with Pakistan football.',
-    image: '/Merch-03.png',
+    image: '/images/products/coco-2026.png',
     price: 2099,
     badge: 'New',
     sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
@@ -51,8 +51,8 @@ export const products: Product[] = [
     subtitle: 'Best Value',
     description:
       'Get both shirts at a discounted bundle price — the iWEAR Classic and the COCO-sponsored 2025 edition. Own the complete Ultra Shaheens collection.',
-    images: ['/Merch-01.png', '/Merch-03.png'],
-    image: '/Merch-01.png',
+    images: ['/images/products/iwear-classic.png', '/images/products/coco-2026.png'],
+    image: '/images/products/iwear-classic.png',
     price: 3499,
     originalPrice: 4198,
     savings: 699,

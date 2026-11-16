@@ -10,110 +10,71 @@ type ProductCardProps = {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
-    <Link href={`/product/${product.id}`} className="group block">
-      <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:border-canary/30 h-full flex flex-col">
-        {/* Combo ribbon */}
+    <Link href={`/product/${product.id}`} className="group flex flex-col h-full">
+      <div className="relative aspect-square bg-paper-2 overflow-hidden">
         {product.isCombo && (
-          <div className="absolute top-4 left-4 z-10">
-            <span
-              className="bg-canary text-racing-green text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full "
-              style={{ fontFamily: '"din-condensed", sans-serif' }}
-            >
-              BEST VALUE
-            </span>
-          </div>
+          <span className="absolute top-4 left-4 z-20 bg-canary text-ink-dark px-3 py-1.5 font-display font-bold text-[13px] tracking-[0.14em] uppercase">
+            Best value
+          </span>
         )}
+        <span className="absolute top-4 right-4 z-20 bg-ink-dark text-paper px-3 py-1.5 font-display font-semibold text-[13px] tracking-[0.14em] uppercase">
+          {product.badge}
+        </span>
 
-        {/* Badge */}
-        {!product.isCombo && (
-          <div className="absolute top-4 right-4 z-10">
-            <span
-              className="bg-white/20 border border-white/30 text-white text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-sm"
-              style={{ fontFamily: '"din-condensed", sans-serif' }}
-            >
-              {product.badge}
-            </span>
-          </div>
-        )}
-        {product.isCombo && (
-          <div className="absolute top-4 right-4 z-10">
-            <span
-              className="bg-white/20 border border-white/30 text-white text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full backdrop-blur-sm"
-              style={{ fontFamily: '"din-condensed", sans-serif' }}
-            >
-              {product.badge}
-            </span>
-          </div>
-        )}
-
-        {/* Image */}
-        <div className="relative h-64 sm:h-72 bg-gradient-to-b from-dark-fern/20 to-transparent overflow-hidden">
-          {product.isCombo && product.images ? (
-            <div className="absolute inset-0 flex items-center justify-center">
-              {/* Back shirt — shifted right */}
-              <div className="absolute w-[55%] h-[85%] right-[8%] top-[7%] transition-transform duration-500 group-hover:translate-x-1">
-                <Image src={product.images[1]} alt="2025 Shirt" fill className="object-contain drop-shadow-[4px_4px_12px_rgba(0,0,0,0.6)]" />
-              </div>
-              {/* Front shirt — shifted left, on top */}
-              <div className="absolute w-[55%] h-[85%] left-[8%] top-[7%] z-10 transition-transform duration-500 group-hover:-translate-x-1">
-                <Image src={product.images[0]} alt="Classic Shirt" fill className="object-contain drop-shadow-[-4px_4px_12px_rgba(0,0,0,0.6)]" />
-              </div>
+        {product.isCombo && product.images ? (
+          <div className="absolute inset-0">
+            <div className="absolute w-[55%] h-[75%] right-[6%] top-[14%] transition-transform duration-500 group-hover:translate-x-1">
+              <Image
+                src={product.images[1]}
+                alt="2026 Shirt"
+                fill
+                sizes="(min-width: 1024px) 200px, 40vw"
+                className="object-contain"
+              />
             </div>
-          ) : (
-            <Image
-              src={product.image}
-              alt={product.name}
-              fill
-              className="object-contain p-6 transition-transform duration-500 group-hover:scale-105"
-            />
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="p-6 flex flex-col flex-1">
-          <div className="mb-2">
-            <p
-              className="text-asparagus text-xs font-bold uppercase tracking-widest mb-1"
-              style={{ fontFamily: '"din-condensed", sans-serif' }}
-            >
-              {product.subtitle}
-            </p>
-            <h3
-              className="text-white text-xl font-bold uppercase tracking-wide leading-tight group-hover:text-canary transition-colors duration-300"
-              style={{ fontFamily: '"din-condensed", sans-serif' }}
-            >
-              {product.name}
-            </h3>
-          </div>
-
-          <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-1">
-            {product.description}
-          </p>
-
-          <div className="flex items-center justify-between">
-            <div>
-              {product.originalPrice && (
-                <p className="text-gray-500 text-sm line-through">{formatPrice(product.originalPrice)}</p>
-              )}
-              <p
-                className="text-canary text-xl font-bold tracking-widest"
-                style={{ fontFamily: '"din-condensed", sans-serif' }}
-              >
-                {formatPrice(product.price)}
-              </p>
-              {product.savings && (
-                <p className="text-green-400 text-xs font-bold">Save {formatPrice(product.savings)}</p>
-              )}
+            <div className="absolute w-[55%] h-[75%] left-[6%] top-[14%] z-10 transition-transform duration-500 group-hover:-translate-x-1">
+              <Image
+                src={product.images[0]}
+                alt="Classic Shirt"
+                fill
+                sizes="(min-width: 1024px) 200px, 40vw"
+                className="object-contain"
+              />
             </div>
-
-            {/* CTA */}
-            <span
-              className="bg-white/10 border border-white/20 text-white text-sm font-bold uppercase tracking-widest px-4 py-2 rounded-xl group-hover:bg-canary group-hover:text-racing-green group-hover:border-canary transition-all duration-300"
-              style={{ fontFamily: '"din-condensed", sans-serif' }}
-            >
-              View →
-            </span>
           </div>
+        ) : (
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            sizes="(min-width: 1024px) 380px, 100vw"
+            className="object-contain p-[10%] transition-transform duration-500 group-hover:scale-[1.04]"
+          />
+        )}
+      </div>
+
+      <div className="flex flex-col flex-1 gap-3 pt-5">
+        <div className="eyebrow text-green-accent !text-[13px]">{product.subtitle}</div>
+        <h3 className="m-0 font-display font-extrabold uppercase text-[30px] leading-[0.95] text-ink">
+          {product.name}
+        </h3>
+        <p className="m-0 text-[15px] leading-[1.55] text-body-light flex-1">{product.description}</p>
+
+        <div className="flex items-end justify-between gap-4 pt-4 border-t border-ink/20">
+          <div className="flex flex-col">
+            {product.originalPrice && (
+              <span className="text-sm text-muted-light line-through">{formatPrice(product.originalPrice)}</span>
+            )}
+            <span className="font-display font-bold text-[28px] leading-none text-ink">
+              {formatPrice(product.price)}
+            </span>
+            {product.savings && (
+              <span className="mt-1 text-[13px] font-semibold text-green-accent">
+                Save {formatPrice(product.savings)}
+              </span>
+            )}
+          </div>
+          <span className="btn btn-dark group-hover:bg-green-accent !px-5 !py-3 !text-base">View →</span>
         </div>
       </div>
     </Link>

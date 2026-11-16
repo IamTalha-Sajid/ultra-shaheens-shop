@@ -14,193 +14,165 @@ export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, totalItems, subtotal, total } = useCart()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#05110a] via-[#0b1f13] to-[#040806] relative overflow-hidden">
-      {/* Ambient orbs */}
-      <div className="absolute top-0 left-1/3 w-[500px] h-[500px] bg-dark-fern/20 rounded-full blur-[120px] pointer-events-none" />
-
+    <div className="font-sans min-h-screen bg-ink-dark text-paper flex flex-col">
       <Header />
 
-      <div className="relative z-10 pt-40 sm:pt-48 pb-24 px-4 max-w-6xl mx-auto">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-gray-500 mb-10">
-          <Link href="/" className="hover:text-canary transition-colors">Home</Link>
-          <span>/</span>
-          <span className="text-white">Cart</span>
-        </nav>
-
-        <h1
-          className="text-5xl sm:text-6xl font-black uppercase tracking-widest text-white mb-2"
-          style={{ fontFamily: '"din-condensed", sans-serif' }}
-        >
-          Your <span className="text-canary">Cart</span>
-        </h1>
-
-        {cart.length === 0 ? (
-          /* Empty state */
-          <div className="text-center py-32">
-            <div className="mb-6 flex justify-center">
-              <svg className="w-24 h-24 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <h2
-              className="text-3xl font-black uppercase tracking-widest text-white mb-4"
-              style={{ fontFamily: '"din-condensed", sans-serif' }}
-            >
-              Your Cart is Empty
-            </h2>
-            <p className="text-gray-400 mb-10">Add some shirts to get started.</p>
-            <Link
-              href="/"
-              className="inline-block bg-canary text-racing-green font-bold uppercase tracking-widest py-4 px-10 rounded-xl hover:bg-canary/90 transition-all duration-300"
-              style={{ fontFamily: '"din-condensed", sans-serif' }}
-            >
-              Browse Products
-            </Link>
+      <div className="page-pad flex-1">
+        <div className="wrap flex flex-col gap-[clamp(32px,4vw,56px)]">
+          <div className="flex flex-col gap-5">
+            <nav className="flex items-center gap-2.5 label text-paper/60">
+              <Link href="/" className="hover:text-canary">Shop</Link>
+              <span>/</span>
+              <span className="text-paper">Cart</span>
+            </nav>
+            <h1 className="h1-page">
+              Your <span className="text-canary">Cart</span>
+            </h1>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-10">
-            {/* Cart Items */}
-            <div className="lg:col-span-2 space-y-4">
-              <p className="text-gray-400 text-sm mb-6">{totalItems} item{totalItems !== 1 ? 's' : ''} in your cart</p>
-              {cart.map((item) => {
-                const product = getProductById(item.productId)
-                if (!product) return null
-                return (
-                  <div
-                    key={`${item.productId}-${item.size}`}
-                    className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-5 flex items-start gap-5 hover:border-white/30 transition-all duration-200"
-                  >
-                    {/* Thumbnail */}
-                    <div className="relative w-20 h-20 flex-shrink-0 bg-dark-fern/20 rounded-xl overflow-hidden">
-                      <Image
-                        src={product.image}
-                        alt={product.name}
-                        fill
-                        className="object-contain p-2"
-                      />
-                    </div>
 
-                    {/* Details */}
-                    <div className="flex-1 min-w-0">
-                      <h3
-                        className="text-white font-bold uppercase tracking-wide text-sm leading-tight mb-1"
-                        style={{ fontFamily: '"din-condensed", sans-serif' }}
-                      >
-                        {product.name}
-                      </h3>
-                      <p className="text-asparagus text-xs font-bold uppercase tracking-widest mb-3" style={{ fontFamily: '"din-condensed", sans-serif' }}>
-                        Size: {item.size}
-                      </p>
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => updateQuantity(item.productId, item.size, item.quantity - 1)}
-                          className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors text-sm font-bold flex items-center justify-center"
-                        >
-                          −
-                        </button>
-                        <span className="text-white font-bold w-6 text-center">{item.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(item.productId, item.size, item.quantity + 1)}
-                          className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors text-sm font-bold flex items-center justify-center"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Price + Remove */}
-                    <div className="flex flex-col items-end gap-3 flex-shrink-0">
-                      <span
-                        className="text-canary font-bold text-sm"
-                        style={{ fontFamily: '"din-condensed", sans-serif' }}
-                      >
-                        {formatPrice((product.price ?? 0) * item.quantity)}
-                      </span>
-                      <button
-                        onClick={() => removeFromCart(item.productId, item.size)}
-                        className="text-gray-500 hover:text-red-400 transition-colors p-1 rounded-lg hover:bg-red-400/10"
-                        aria-label="Remove item"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                )
-              })}
+          {cart.length === 0 ? (
+            <div className="flex flex-col items-start gap-6 py-10 border-t border-paper/20">
+              <h2 className="m-0 font-display font-extrabold uppercase text-[clamp(32px,4vw,48px)] leading-none">
+                Your cart is empty
+              </h2>
+              <p className="m-0 text-lg text-paper/70">Add some shirts to get started.</p>
+              <Link href="/" className="btn btn-primary">
+                Browse products
+              </Link>
             </div>
-
-            {/* Order Summary */}
-            <div className="lg:col-span-1">
-              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sticky top-36">
-                <h2
-                  className="text-xl font-black uppercase tracking-widest text-white mb-6"
-                  style={{ fontFamily: '"din-condensed", sans-serif' }}
-                >
-                  Order Summary
-                </h2>
-
-                <div className="space-y-3 mb-6">
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] gap-x-16 gap-y-12 items-start">
+              {/* Cart items */}
+              <div className="flex flex-col">
+                <p className="m-0 pb-4 label text-paper/60">
+                  {totalItems} item{totalItems !== 1 ? 's' : ''} in your cart
+                </p>
+                <div className="flex flex-col border-t border-paper/20">
                   {cart.map((item) => {
                     const product = getProductById(item.productId)
                     if (!product) return null
                     return (
-                      <div key={`${item.productId}-${item.size}`} className="flex justify-between text-sm">
-                        <span className="text-gray-400 truncate max-w-[70%]">
+                      <div
+                        key={`${item.productId}-${item.size}`}
+                        className="grid grid-cols-[88px_minmax(0,1fr)_auto] gap-x-5 gap-y-3 py-6 border-b border-paper/20 items-start"
+                      >
+                        <div className="relative w-[88px] h-[88px] bg-paper-2">
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            sizes="88px"
+                            className="object-contain p-2"
+                          />
+                        </div>
+
+                        <div className="min-w-0 flex flex-col gap-1.5">
+                          <h3 className="m-0 font-display font-extrabold uppercase text-[22px] leading-none">
+                            {product.name}
+                          </h3>
+                          <p className="m-0 label text-canary !tracking-[0.12em] break-words">
+                            Size: {item.size}
+                          </p>
+                        </div>
+
+                        <span className="font-display font-bold text-[22px] leading-none whitespace-nowrap">
+                          {formatPrice((product.price ?? 0) * item.quantity)}
+                        </span>
+
+                        <div className="col-span-3 sm:col-span-2 sm:col-start-2 flex items-center justify-between gap-4">
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.productId, item.size, item.quantity - 1)}
+                              aria-label="Decrease quantity"
+                              className="stepper-btn"
+                            >
+                              −
+                            </button>
+                            <span className="w-12 text-center font-display font-bold text-xl">{item.quantity}</span>
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.productId, item.size, item.quantity + 1)}
+                              aria-label="Increase quantity"
+                              className="stepper-btn"
+                            >
+                              +
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeFromCart(item.productId, item.size)}
+                            aria-label="Remove item"
+                            className="h-11 px-1 label text-paper/60 underline underline-offset-4 hover:text-canary cursor-pointer"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Order summary */}
+              <div className="bg-paper text-ink p-[clamp(24px,3vw,32px)] flex flex-col gap-6 lg:sticky lg:top-28">
+                <h2 className="m-0 font-display font-extrabold uppercase text-[32px] leading-none">
+                  Order summary
+                </h2>
+
+                <div className="flex flex-col gap-2.5">
+                  {cart.map((item) => {
+                    const product = getProductById(item.productId)
+                    if (!product) return null
+                    return (
+                      <div key={`${item.productId}-${item.size}`} className="flex justify-between gap-3 text-sm">
+                        <span className="text-body-light min-w-0 break-words">
                           {product.name} ({item.size}) ×{item.quantity}
                         </span>
-                        <span className="text-canary font-bold text-xs flex-shrink-0 ml-2" style={{ fontFamily: '"din-condensed", sans-serif' }}>
-                          {formatPrice(product.price * item.quantity)}
-                        </span>
+                        <span className="font-semibold flex-none">{formatPrice(product.price * item.quantity)}</span>
                       </div>
                     )
                   })}
                 </div>
 
-                <div className="border-t border-white/10 pt-4 mb-6 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Subtotal</span>
-                    <span className="text-white font-bold">{formatPrice(subtotal)}</span>
+                <div className="pt-4 border-t-[1.5px] border-ink flex flex-col gap-2">
+                  <div className="flex justify-between text-[15px]">
+                    <span className="text-body-light">Subtotal</span>
+                    <span className="font-semibold">{formatPrice(subtotal)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Delivery</span>
-                    <span className="text-white font-bold">{formatPrice(DELIVERY_CHARGE)}</span>
+                  <div className="flex justify-between text-[15px]">
+                    <span className="text-body-light">Delivery</span>
+                    <span className="font-semibold">{formatPrice(DELIVERY_CHARGE)}</span>
                   </div>
-                  <div className="flex justify-between text-base border-t border-white/10 pt-2 mt-2">
-                    <span className="text-white font-black uppercase tracking-widest" style={{ fontFamily: '"din-condensed", sans-serif' }}>Total</span>
-                    <span className="text-canary font-black text-lg" style={{ fontFamily: '"din-condensed", sans-serif' }}>{formatPrice(total)}</span>
-                  </div>
-                </div>
-
-                {/* Prepaid savings teaser */}
-                <div className="bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3 mb-4 flex items-start gap-2">
-                  <svg className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  <div>
-                    <p className="text-green-400 text-xs font-bold uppercase tracking-wider" style={{ fontFamily: '"din-condensed", sans-serif' }}>5% Prepaid Discount Available</p>
-                    <p className="text-gray-400 text-xs mt-0.5">Choose prepaid at checkout &amp; save <span className="text-white font-bold">{formatPrice(subtotal - prepaidPrice(subtotal))}</span></p>
+                  <div className="flex justify-between items-baseline pt-3 mt-1 border-t border-ink/20">
+                    <span className="label text-ink">Total</span>
+                    <span className="font-display font-extrabold text-[32px] leading-none">{formatPrice(total)}</span>
                   </div>
                 </div>
 
-                <button
-                  onClick={() => router.push('/checkout')}
-                  className="w-full flex items-center justify-center gap-3 py-4 px-6 rounded-xl bg-[#f3f754] hover:bg-[#f3f754]/90 text-[#05110a] font-black uppercase tracking-widest transition-all duration-300 mb-3"
-                  style={{ fontFamily: '"din-condensed", sans-serif' }}
-                >
-                  Proceed to Checkout
-                </button>
+                <div className="border border-ink/30 px-4 py-3">
+                  <p className="m-0 label text-green-accent">5% prepaid discount available</p>
+                  <p className="m-0 mt-1 text-sm text-body-light">
+                    Choose prepaid at checkout and save{' '}
+                    <strong className="text-ink">{formatPrice(subtotal - prepaidPrice(subtotal))}</strong>.
+                  </p>
+                </div>
 
-                <Link
-                  href="/"
-                  className="block w-full text-center py-3 rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-200 text-sm font-medium"
-                >
-                  Continue Shopping
-                </Link>
+                <div className="flex flex-col gap-3">
+                  <button type="button" onClick={() => router.push('/checkout')} className="btn btn-dark w-full">
+                    Proceed to checkout
+                  </button>
+                  <Link
+                    href="/"
+                    className="text-center text-sm text-muted-light underline underline-offset-4 hover:text-green-accent"
+                  >
+                    Continue shopping
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <Footer />

@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import type { Product } from '@/lib/products'
-import { formatPrice, DELIVERY_CHARGE, prepaidPrice } from '@/lib/products'
+import { formatPrice, prepaidPrice } from '@/lib/products'
 import SizeSelector from '@/components/SizeSelector'
 import SizeChartModal from '@/components/SizeChartModal'
 import { useCart } from '@/lib/cartContext'
@@ -12,8 +12,21 @@ type Props = {
   product: Product
 }
 
-const IWEAR_SIZE_CHART = '/iWear_Size%20Chart.png'
-const COCO_SIZE_CHART = '/Coco_Size%20Chart.png'
+const IWEAR_SIZE_CHART = '/images/size-charts/iwear.png'
+const COCO_SIZE_CHART = '/images/size-charts/coco.png'
+
+const SizeHeading = ({ title, onChart }: { title: string; onChart: () => void }) => (
+  <div className="flex items-center justify-between gap-3">
+    <p className="m-0 label text-paper">{title}</p>
+    <button
+      type="button"
+      onClick={onChart}
+      className="px-3 py-2 border border-paper/40 font-display font-semibold text-[13px] tracking-[0.14em] uppercase text-paper hover:bg-paper hover:text-ink-dark transition-colors cursor-pointer"
+    >
+      Size chart
+    </button>
+  </div>
+)
 
 export default function ProductDetailClient({ product }: Props) {
   const [selectedSize, setSelectedSize] = useState<string | null>(null)
@@ -50,23 +63,18 @@ export default function ProductDetailClient({ product }: Props) {
     setTimeout(() => setAddedToCart(false), 2000)
   }
 
-  const lineTotal = product.price * quantity
-
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+    <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,420px),1fr))] gap-x-16 gap-y-12 items-start">
       {/* Images */}
-      <div className="space-y-4">
-        <div className="relative bg-white/5 border border-white/10 rounded-3xl overflow-hidden aspect-square">
+      <div className="flex flex-col gap-4">
+        <div className="relative aspect-square bg-paper-2 overflow-hidden">
           {product.isCombo && images.length > 1 ? (
-            /* Overlapping combo layout */
-            <div className="absolute inset-0 flex items-center justify-center">
-              {/* Back shirt — right side */}
-              <div className="absolute w-[58%] h-[80%] right-[5%] top-[10%]">
-                <Image src={images[1]} alt="2025 Shirt" fill className="object-contain drop-shadow-[6px_6px_18px_rgba(0,0,0,0.7)]" priority />
+            <div className="absolute inset-0">
+              <div className="absolute w-[58%] h-[72%] right-[4%] top-[14%]">
+                <Image src={images[1]} alt="2026 Shirt" fill sizes="(min-width: 1024px) 320px, 50vw" className="object-contain" priority />
               </div>
-              {/* Front shirt — left side, on top */}
-              <div className="absolute w-[58%] h-[80%] left-[5%] top-[10%] z-10">
-                <Image src={images[0]} alt="Classic Shirt" fill className="object-contain drop-shadow-[-6px_6px_18px_rgba(0,0,0,0.7)]" priority />
+              <div className="absolute w-[58%] h-[72%] left-[4%] top-[14%] z-10">
+                <Image src={images[0]} alt="Classic Shirt" fill sizes="(min-width: 1024px) 320px, 50vw" className="object-contain" priority />
               </div>
             </div>
           ) : (
@@ -74,33 +82,31 @@ export default function ProductDetailClient({ product }: Props) {
               src={images[activeImage]}
               alt={product.name}
               fill
-              className="object-contain p-8"
+              sizes="(min-width: 1024px) 560px, 100vw"
+              className="object-contain p-[8%]"
               priority
             />
           )}
           {product.isCombo && (
-            <div className="absolute top-4 left-4 z-20">
-              <span
-                className="bg-canary text-racing-green text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full"
-                style={{ fontFamily: '"din-condensed", sans-serif' }}
-              >
-                BEST VALUE
-              </span>
-            </div>
+            <span className="absolute top-5 left-5 z-20 bg-canary text-ink-dark px-3 py-1.5 font-display font-bold text-[13px] tracking-[0.14em] uppercase">
+              Best value
+            </span>
           )}
         </div>
         {/* Thumbnails — only for single-image products */}
         {!product.isCombo && images.length > 1 && (
-          <div className="flex gap-4">
+          <div className="flex gap-3">
             {images.map((img, idx) => (
               <button
                 key={idx}
+                type="button"
                 onClick={() => setActiveImage(idx)}
-                className={`relative w-24 h-24 rounded-2xl overflow-hidden border-2 transition-all duration-200 ${
-                  activeImage === idx ? 'border-canary' : 'border-white/20 hover:border-white/40'
+                aria-label={`View ${idx + 1}`}
+                className={`relative w-24 h-24 bg-paper-2 border-2 cursor-pointer ${
+                  activeImage === idx ? 'border-canary' : 'border-transparent hover:border-paper/50'
                 }`}
               >
-                <Image src={img} alt={`View ${idx + 1}`} fill className="object-contain p-2" />
+                <Image src={img} alt="" fill sizes="96px" className="object-contain p-2" />
               </button>
             ))}
           </div>
@@ -108,130 +114,59 @@ export default function ProductDetailClient({ product }: Props) {
       </div>
 
       {/* Product Info */}
-      <div className="space-y-6">
-        {/* Badge + subtitle */}
-        <div className="flex items-center gap-3">
-          <span
-            className="bg-white/10 border border-white/20 text-white text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full"
-            style={{ fontFamily: '"din-condensed", sans-serif' }}
-          >
-            {product.badge}
-          </span>
-          <span className="text-asparagus text-sm font-bold uppercase tracking-widest" style={{ fontFamily: '"din-condensed", sans-serif' }}>
-            {product.subtitle}
-          </span>
+      <div className="flex flex-col gap-7">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="border border-paper/40 px-3 py-1.5 font-display font-semibold text-[13px] tracking-[0.14em] uppercase">
+              {product.badge}
+            </span>
+            <span className="eyebrow text-canary !text-[13px]">{product.subtitle}</span>
+          </div>
+          <h1 className="m-0 font-display font-extrabold uppercase text-[clamp(40px,5vw,72px)] leading-[0.9]">
+            {product.name}
+          </h1>
+          <p className="m-0 text-[17px] leading-[1.6] text-paper/[0.78]">{product.description}</p>
         </div>
 
-        {/* Name */}
-        <h1
-          className="text-4xl sm:text-5xl font-black uppercase tracking-wide text-white leading-tight"
-          style={{ fontFamily: '"din-condensed", sans-serif' }}
-        >
-          {product.name}
-        </h1>
-
-        {/* Description */}
-        <p className="text-gray-400 text-base leading-relaxed">{product.description}</p>
-
         {/* Price */}
-        <div className="bg-canary/10 border border-canary/20 rounded-2xl px-6 py-4 space-y-1">
+        <div className="flex flex-col gap-2 py-5 border-y border-paper/20">
           {product.originalPrice && (
-            <p className="text-gray-500 text-base line-through">{formatPrice(product.originalPrice)}</p>
+            <span className="text-base text-paper/50 line-through">{formatPrice(product.originalPrice)}</span>
           )}
-          <p
-            className="text-canary text-3xl font-black tracking-widest"
-            style={{ fontFamily: '"din-condensed", sans-serif' }}
-          >
+          <span className="font-display font-extrabold text-[clamp(44px,5vw,64px)] leading-[0.9] text-canary">
             {formatPrice(product.price)}
-          </p>
+          </span>
           {product.savings && (
-            <p className="text-green-400 text-sm font-bold">You save {formatPrice(product.savings)}</p>
+            <span className="text-sm font-semibold text-canary">You save {formatPrice(product.savings)}</span>
           )}
-          <p className="text-gray-400 text-xs pt-1">+ Rs. 299 delivery charge</p>
-          <div className="mt-3 pt-3 border-t border-white/10 flex items-center gap-2">
-            <svg className="w-3.5 h-3.5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <p className="text-green-400 text-xs font-bold">
-              Prepaid order? Pay in advance &amp; get it for only <span className="text-white">{formatPrice(prepaidPrice(product.price))}</span> — 5% off!
-            </p>
-          </div>
+          <span className="text-sm text-paper/60">+ Rs. 299 delivery charge</span>
+          <p className="m-0 mt-2 text-sm text-paper/[0.78]">
+            <strong className="text-paper font-semibold">Prepaid order?</strong> Pay in advance and get it for
+            only <strong className="text-canary font-semibold">{formatPrice(prepaidPrice(product.price))}</strong>, 5% off.
+          </p>
           {product.discountNote && (
-            <div className="mt-3 pt-3 border-t border-canary/20">
-              <p className="text-canary/80 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5" style={{ fontFamily: '"din-condensed", sans-serif' }}>
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A2 2 0 013 9.172V5a2 2 0 012-2z" /></svg>
-                Special Offer
-              </p>
-              <p className="text-gray-300 text-sm mt-1">{product.discountNote}</p>
+            <div className="mt-2 pt-3 border-t border-paper/20">
+              <p className="m-0 label text-canary">Special offer</p>
+              <p className="m-0 mt-1 text-sm text-paper/[0.78]">{product.discountNote}</p>
             </div>
           )}
         </div>
 
         {/* Size Selector */}
         {product.isCombo ? (
-          <div className="space-y-5">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <p
-                  className="text-white font-bold uppercase tracking-widest text-sm"
-                  style={{ fontFamily: '"din-condensed", sans-serif' }}
-                >
-                  Classic Shirt (iWEAR) — Size
-                </p>
-                <button
-                  onClick={() => openSizeChart(IWEAR_SIZE_CHART)}
-                  className="flex items-center gap-1.5 text-xs text-canary hover:text-canary/80 font-bold uppercase tracking-wider transition-colors border border-canary/30 hover:border-canary/60 px-3 py-1 rounded-lg bg-canary/5 hover:bg-canary/10"
-                  style={{ fontFamily: '"din-condensed", sans-serif' }}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                  Size Chart
-                </button>
-              </div>
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-3">
+              <SizeHeading title="Classic Shirt (iWEAR) — Size" onChart={() => openSizeChart(IWEAR_SIZE_CHART)} />
               <SizeSelector sizes={product.sizes} selected={comboClassicSize} onSelect={setComboClassicSize} />
             </div>
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <p
-                  className="text-white font-bold uppercase tracking-widest text-sm"
-                  style={{ fontFamily: '"din-condensed", sans-serif' }}
-                >
-                  New Shirt (COCO) — Size
-                </p>
-                <button
-                  onClick={() => openSizeChart(COCO_SIZE_CHART)}
-                  className="flex items-center gap-1.5 text-xs text-canary hover:text-canary/80 font-bold uppercase tracking-wider transition-colors border border-canary/30 hover:border-canary/60 px-3 py-1 rounded-lg bg-canary/5 hover:bg-canary/10"
-                  style={{ fontFamily: '"din-condensed", sans-serif' }}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                  Size Chart
-                </button>
-              </div>
+            <div className="flex flex-col gap-3">
+              <SizeHeading title="New Shirt (COCO) — Size" onChart={() => openSizeChart(COCO_SIZE_CHART)} />
               <SizeSelector sizes={product.sizes} selected={comboNewSize} onSelect={setComboNewSize} />
             </div>
           </div>
         ) : (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <p
-                className="text-white font-bold uppercase tracking-widest text-sm"
-                style={{ fontFamily: '"din-condensed", sans-serif' }}
-              >
-                Select Size
-              </p>
-              <button
-                onClick={() => openSizeChart(activeSizeChart)}
-                className="flex items-center gap-1.5 text-xs text-canary hover:text-canary/80 font-bold uppercase tracking-wider transition-colors border border-canary/30 hover:border-canary/60 px-3 py-1 rounded-lg bg-canary/5 hover:bg-canary/10"
-                style={{ fontFamily: '"din-condensed", sans-serif' }}
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                Size Chart
-              </button>
-            </div>
+          <div className="flex flex-col gap-3">
+            <SizeHeading title="Select size" onChart={() => openSizeChart(activeSizeChart)} />
             <SizeSelector sizes={product.sizes} selected={selectedSize} onSelect={setSelectedSize} />
           </div>
         )}
@@ -243,71 +178,49 @@ export default function ProductDetailClient({ product }: Props) {
           productName={product.name}
         />
 
-        {/* Quantity Selector */}
-        <div className="space-y-3">
-          <p
-            className="text-white font-bold uppercase tracking-widest text-sm"
-            style={{ fontFamily: '"din-condensed", sans-serif' }}
-          >
-            Quantity
-          </p>
-          <div className="flex items-center gap-4">
+        {/* Quantity */}
+        <div className="flex flex-col gap-3">
+          <p className="m-0 label text-paper">Quantity</p>
+          <div className="flex items-center gap-1">
             <button
+              type="button"
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors text-lg font-bold flex items-center justify-center"
+              aria-label="Decrease quantity"
+              className="stepper-btn"
             >
               −
             </button>
-            <span className="text-white font-bold text-xl w-8 text-center">{quantity}</span>
+            <span className="w-14 text-center font-display font-bold text-2xl">{quantity}</span>
             <button
+              type="button"
               onClick={() => setQuantity((q) => q + 1)}
-              className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-colors text-lg font-bold flex items-center justify-center"
+              aria-label="Increase quantity"
+              className="stepper-btn"
             >
               +
             </button>
           </div>
         </div>
 
-        {/* CTAs */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <button
-            onClick={handleAddToCart}
-            disabled={!canAddToCart}
-            className={`flex-1 py-4 px-8 rounded-xl font-bold uppercase tracking-widest transition-all duration-300 ${
-              canAddToCart
-                ? addedToCart
-                  ? 'bg-green-500 text-white'
-                  : 'bg-canary text-racing-green hover:bg-canary/90'
-                : 'bg-white/10 text-white/40 cursor-not-allowed border border-white/10'
-            }`}
-            style={{ fontFamily: '"din-condensed", sans-serif' }}
-          >
-            {addedToCart ? '✓ Added to Cart' : 'Add to Cart'}
-          </button>
-        </div>
+        {/* CTA */}
+        <button
+          type="button"
+          onClick={handleAddToCart}
+          disabled={!canAddToCart}
+          className={`btn w-full ${addedToCart ? 'bg-paper text-ink-dark' : 'btn-primary'}`}
+        >
+          {addedToCart ? '✓ Added to cart' : 'Add to cart'}
+        </button>
 
         {/* Trust indicators */}
-        <div className="border-t border-white/10 pt-6 grid grid-cols-2 gap-4">
-          {[
-            {
-              icon: <svg className="w-4 h-4 text-canary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>,
-              text: 'Authentic Official Merch',
-            },
-            {
-              icon: <svg className="w-4 h-4 text-canary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
-              text: 'Made for Pakistan Fans',
-            },
-            {
-              icon: <svg className="w-4 h-4 text-canary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>,
-              text: 'Supporting Pakistan Football',
-            },
-          ].map((item) => (
-            <div key={item.text} className="flex items-center gap-2">
-              {item.icon}
-              <span className="text-gray-400 text-xs">{item.text}</span>
-            </div>
+        <ul className="m-0 p-0 list-none pt-6 border-t border-paper/20 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
+          {['Authentic official merch', 'Made for Pakistan fans', 'Supporting Pakistan football'].map((text) => (
+            <li key={text} className="flex items-center gap-2.5 text-sm text-paper/70">
+              <span className="w-1.5 h-1.5 bg-canary flex-none" />
+              {text}
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </div>
   )

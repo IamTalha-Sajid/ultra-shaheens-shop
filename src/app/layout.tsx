@@ -1,27 +1,39 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Barlow, Barlow_Condensed } from 'next/font/google'
 import './globals.css'
 import { CartProvider } from '@/lib/cartContext'
+import SiteLoader from '@/components/SiteLoader'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const barlow = Barlow({
+  variable: '--font-barlow',
   subsets: ['latin'],
+  weight: ['400', '500', '600'],
 })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const barlowCondensed = Barlow_Condensed({
+  variable: '--font-barlow-condensed',
   subsets: ['latin'],
+  weight: ['500', '600', '700', '800'],
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://shop.ultrashaheens.com'),
   title: 'Ultra Shaheens Shop',
   description: 'Official merchandise store of Ultra Shaheens — Pakistan\'s most passionate football community.',
   keywords: ['Ultra Shaheens', 'merchandise', 'shop', 'Pakistan football', 'jersey', 'shirt'],
   authors: [{ name: 'Ultra Shaheens' }],
   openGraph: {
+    type: 'website',
+    url: '/',
+    siteName: 'Ultra Shaheens Shop',
     title: 'Ultra Shaheens Shop',
     description: 'Official merchandise store of Ultra Shaheens — Pakistan\'s most passionate football community.',
-    images: ['/ultra-shaheens-logo.png'],
+    images: [{ url: '/images/brand/og-image.jpg', width: 1200, height: 630, type: 'image/jpeg', alt: 'Ultra Shaheens Official Shop' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@ultrashaheens',
+    images: ['/images/brand/og-image.jpg'],
   },
   icons: {
     icon: [
@@ -44,11 +56,19 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/site.webmanifest" />
+        {/* Hide the intro loader before first paint on repeat visits or reduced motion. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(sessionStorage.getItem('us-loader-seen')||matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.setAttribute('data-loader-seen','')}catch(e){}",
+          }}
+        />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${barlow.variable} ${barlowCondensed.variable} antialiased`}>
+        <SiteLoader />
         <CartProvider>{children}</CartProvider>
       </body>
     </html>

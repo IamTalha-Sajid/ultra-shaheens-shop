@@ -26,47 +26,41 @@ const SizeChartModal: React.FC<Props> = ({ open, onClose, chartImage, productNam
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-[200] flex items-center justify-center px-4 bg-black/70 backdrop-blur-sm overflow-y-auto"
-      style={{ top: '5rem' }}
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-ink-dark/80 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="relative bg-[#0b1f13] border border-white/20 rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.7)] max-w-lg w-full"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Size chart for ${productName}`}
+        className="relative bg-paper text-ink max-w-lg w-full"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-white/10">
-          <h2
-            className="text-white font-black uppercase tracking-widest text-base"
-            style={{ fontFamily: '"din-condensed", sans-serif' }}
-          >
-            Size Chart — <span className="text-canary">{productName}</span>
+        <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-ink/20">
+          <h2 className="m-0 font-display font-extrabold uppercase text-[22px] leading-none">
+            Size chart
+            <span className="block mt-1 label text-muted-light">{productName}</span>
           </h2>
           <button
+            type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-2 transition-all duration-200"
-            aria-label="Close size chart"
+            className="flex-none h-11 px-4 border-[1.5px] border-ink font-display font-bold text-sm tracking-[0.14em] uppercase hover:bg-ink hover:text-paper cursor-pointer"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            Close
           </button>
         </div>
 
-        {/* Image */}
-        <div className="p-3">
-          <div className="relative w-full rounded-xl overflow-hidden bg-white/5">
-            <Image
-              src={chartImage}
-              alt={`Size chart for ${productName}`}
-              width={600}
-              height={450}
-              className="w-full h-auto object-contain max-h-[55vh]"
-            />
-          </div>
+        <div className="p-3 bg-paper-2">
+          <Image
+            src={chartImage}
+            alt={`Size chart for ${productName}`}
+            width={600}
+            height={450}
+            className="w-full h-auto object-contain max-h-[55vh]"
+          />
         </div>
 
-        <p className="text-gray-500 text-xs text-center pb-4 px-5">
+        <p className="m-0 text-muted-light text-[13px] text-center py-4 px-5">
           Measurements are in inches. When between sizes, size up.
         </p>
       </div>
